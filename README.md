@@ -5,14 +5,14 @@ in the js version we just declar a context with no real typing but now it wants 
 
 Then I update expansion panel definition to this:
 ```
-interface IExpansionpanelContext {
-    currentIndex: number;
-    setIndex?: () => {};
+// verbosity of creating a context type separate
+type SelectedIndexType = {
+  currentIndex: number | null,
+  changeValue: (arg: number | null) => void
 }
-const defaultState = {
-  currentIndex = 0,
-}
-export const ExpansionPanelContext = React.createContext<IExpansionpanelContext>(defaultState);
+
+// This is internal and should be set to SelectedContextType
+const ExpansionPanelContext = createContext<SelectedIndexType | undefined>(undefined);
 ```
 
 and that causes the error in this part:
@@ -39,11 +39,10 @@ and that causes the error in this part:
   );
 }
 ```
-at line 40: onClick={() => setIndex(expanded ? -1 : index)} :
+at line 39: const [ currentIndex, setIndex ] = useSelectedContext() ;
 
 ```
-Cannot invoke an object which is possible 'undefined': ts(2722) [Ln 40, Col 24]
-Expected 0 arguments, but got 1. ts(2554) [Ln 40, Col 33]
+Type 'SelectedIndexType' must have a '[Symbol.iterator]()' method that returns an iterator.ts(2488)
 ```
 
 See also: https://stackoverflow.com/questions/66174592/react-typed-context
